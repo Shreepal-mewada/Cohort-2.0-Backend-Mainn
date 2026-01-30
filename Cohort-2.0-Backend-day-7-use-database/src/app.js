@@ -3,19 +3,25 @@ const noteModel = require("./model/notes.model");
 const app = express();
 app.use(express.json());
 
-app.post("/notes", async(req, res) => {
+app.post("/notes", async (req, res) => {
   const { Id, title, description } = req.body;
- const note = await noteModel.create({
-    Id,title,description
+  const note = await noteModel.create({
+    Id,
+    title,
+    description,
   });
-  res.status(201).send({ 
+  res.status(201).json({
     message: "note created successfully",
-    note 
+    note,
   });
 });
 
-app.get("/notes",(req,res)=>{
-     
-})
+app.get("/notes", async (req, res) => {
+  const note = await noteModel.find();
+  res.status(200).json({
+    message: "data fetched successfully",
+    note
+  });
+});
 
 module.exports = app;
