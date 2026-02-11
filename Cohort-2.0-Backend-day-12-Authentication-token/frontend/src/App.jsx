@@ -1,61 +1,31 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { Link, Route, Routes } from "react-router-dom";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Showdata from "./components/Showdata";
 function App() {
-  const [username, setusername] = useState("");
-  const [email, setemail] = useState("");
-  const [password, setpassword] = useState("");
-
   return (
-    <div className="flex justify-center items-center w-full h-screen ">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          axios
-            .post("http://localhost:3000/api/auth/register", {
-              username,
-              email,
-              password,
-            })
-            .then((res) => {
-              console.log(res.data);
-              alert(res.data.message);
-            })
-            .catch((err) => {
-              console.log(err.response.data);
-              alert(err.response.data.message);
-            });
+    <div>
+      <div className=" flex flex-col gap-4">
+        <Link
+          className="bg-blue-400 px-4 py-2 mt-3 rounded-xl text-white"
+          to="/login"
+        >
+          Login
+        </Link>
 
-          setemail("");
-          setpassword("");
-          setusername("");
-        }}
-        className="flex flex-col"
-      >
-        <input
-          type="text"
-          placeholder="Username"
-          className="border p-2 mb-2 rounded-lg"
-          value={username}
-          onChange={(e) => setusername(e.target.value)}
-        />
-        <input
-          value={email}
-          onChange={(e) => setemail(e.target.value)}
-          className="border p-2 mb-2 rounded-lg"
-          type="email"
-          placeholder="Email"
-        />
-        <input
-          value={password}
-          onChange={(e) => setpassword(e.target.value)}
-          type="password"
-          placeholder="Password"
-          className="border p-2 mb-2 rounded-lg"
-        />
-        <button className="px-2 py-2 bg-blue-300 rounded-2xl" type="submit">
-          Register
-        </button>
-      </form>
+        <Link
+          className="bg-blue-400 px-4 py-2 rounded-xl  text-white"
+          to="/showdata"
+        >
+          Show Data
+        </Link>
+
+        <Routes>
+          <Route path="/showdata" element={<Showdata />} />
+          <Route path="/" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </div>
     </div>
   );
 }
