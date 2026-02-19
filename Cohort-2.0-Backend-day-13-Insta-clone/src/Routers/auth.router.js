@@ -18,7 +18,7 @@ registerroute.post("/register",async(req,res)=>{
         const hash=await bcrypt.hash(password,10)
         
         const user=await userModel.create({username,email,password:hash})
-        const token=jwt.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:"1h"})
+        const token=jwt.sign({id:user._id,username:user.username},process.env.JWT_SECRET,{expiresIn:"1h"})
         res.cookie("token",token)
 
         res.status(201).json({
@@ -44,7 +44,7 @@ registerroute.post("/login", async (req, res) => {
       message: "incorrect password", 
     });
   }
-  const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: existingUser._id, username: existingUser.username }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
   res.cookie("token", token);
