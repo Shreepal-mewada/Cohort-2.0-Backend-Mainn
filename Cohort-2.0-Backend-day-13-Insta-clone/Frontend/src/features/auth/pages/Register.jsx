@@ -1,11 +1,25 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import axios from "axios";
+import { useAuth } from "../hooks/auth.hook";
+import { useNavigate } from "react-router";
+
 export default function Register() {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+  const { handleRegister, loading } = useAuth();
+  const navigate = useNavigate();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Loading...</h2>
+          <p className="text-gray-600">Please wait while we register you.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
@@ -14,27 +28,24 @@ export default function Register() {
           Create Account 🚀
         </h2>
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          console.log(username, email, password);
-          axios.post('http://localhost:3000/api/auth/register', {
-            username,
-            email,
-            password
-          },
-        {
-          withCredentials: true
-        }
-        ).then(res => {
-            console.log(res.data);
-            alert("Registration successful: " + res.data.message);
-          }).catch(err => { 
-             alert("Registration failed: " + (err.response?.data?.message || err.message));
-          });
-          setUsername('');
-          setEmail("");
-          setPassword("");
-        }} className="space-y-5">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            console.log(username, email, password);
+            handleRegister(username, email, password)
+              .then(() => {
+                console.log("Registration successful");
+                navigate("/");
+              })
+              .catch((error) => {
+                console.error("Registration failed:", error);
+              });
+            setUsername("");
+            setEmail("");
+            setPassword("");
+          }}
+          className="space-y-5"
+        >
           {/* Username */}
           <div>
             <label className="block text-gray-600 mb-2 text-sm font-medium">

@@ -7,6 +7,7 @@ function AppRouter() {
     <div>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<h1>Home Page</h1>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>

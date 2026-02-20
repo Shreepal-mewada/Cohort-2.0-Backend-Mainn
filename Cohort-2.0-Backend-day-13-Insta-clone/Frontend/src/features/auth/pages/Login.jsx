@@ -1,10 +1,23 @@
 import { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router";
+import { useAuth } from "../hooks/auth.hook"; 
+import { useNavigate } from "react-router";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+   const { handleLogin, loading } = useAuth();
+   const navigate = useNavigate();
+     if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Loading...</h2>
+          <p className="text-gray-600">Please wait while we log you in.</p>
+        </div>
+      </div>
+    );
+  } 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
@@ -16,32 +29,17 @@ export default function Login() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            axios
-              .post(
-                "http://localhost:3000/api/auth/login",
-                {
-                  email,
-                  password,
-                },
-                {
-                  withCredentials: true,
-                },
-              )
-              .then((res) => {
-                console.log(res.data);
-                alert("Login successful: " + res.data.message);
-                // localStorage.setItem("token", res.data.token);
-                // window.location.href = "/home";
-              })
-              .catch((err) => {
-                alert(
-                  "Login failed: " +
-                    (err.response?.data?.message || err.message),
-                );
-              });
-
             console.log(email);
             console.log(password);
+           
+            handleLogin(email, password).then(() => {
+              console.log("Login successful");
+              navigate("/");
+
+            
+            }).catch((error) => {
+              console.error("Login failed:", error);
+            });
             setEmail("");
             setPassword("");
           }}
