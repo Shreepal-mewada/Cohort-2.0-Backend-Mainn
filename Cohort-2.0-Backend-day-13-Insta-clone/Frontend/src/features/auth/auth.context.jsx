@@ -3,38 +3,43 @@ import { loginUser, registerUser } from "./services/auth.api";
 import { useState } from "react";
 export const AuthContext = createContext();
 
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const handleLogin = async (email, password) => {
-    setLoading(true); 
-    try {   
+    setLoading(true);
+    try {
       const userData = await loginUser(email, password);
-      setUser(userData);
+      const serverUser = userData.user;
+      const normalized = { ...serverUser, id: serverUser.id || serverUser._id };
+      setUser(normalized);
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
   const handleRegister = async (username, email, password) => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const userData = await registerUser(username, email, password);
-      setUser(userData);
+      const serverUser = userData.user;
+      const normalized = { ...serverUser, id: serverUser.id || serverUser._id };
+      setUser(normalized);
     } catch (error) {
       console.error("Registration failed:", error);
       throw error;
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
-  return (<AuthContext.Provider value={{ user, loading, handleLogin, handleRegister }}>
+  return (
+    <AuthContext.Provider
+      value={{ user, loading, handleLogin, handleRegister }}
+    >
       {children}
     </AuthContext.Provider>
   );
-
 }

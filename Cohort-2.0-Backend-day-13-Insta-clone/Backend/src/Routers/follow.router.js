@@ -3,6 +3,7 @@ const followRouter = express.Router();
 const authMiddleware = require("../middleware/auth.middleware");
 const followModel = require("../model/follow.model");
 const userdata = require("../model/userdata.model");
+
 followRouter.post("/follow/:username", authMiddleware, async (req, res) => {
   const followername = req.userrr.username;
   const followingname = req.params.username;

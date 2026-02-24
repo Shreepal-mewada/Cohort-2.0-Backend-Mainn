@@ -35,9 +35,11 @@ registerroute.post("/register", async (req, res) => {
 });
 registerroute.post("/login", async (req, res) => {
   const { email, username, password } = req.body;
-  const existingUser = await userModel.findOne({
-    $or: [{ username }, { email }],
-  });
+  const existingUser = await userModel
+    .findOne({
+      $or: [{ username }, { email }],
+    })
+    .select("+password");
   if (!existingUser) {
     return res.status(400).json({
       message: "username or email does not exist",
@@ -60,7 +62,11 @@ registerroute.post("/login", async (req, res) => {
 
   res.status(200).json({
     message: "user logged in successfully",
-    user: { email: existingUser.email, username: existingUser.username },
+    user: {
+      email: existingUser.email,
+      username: existingUser.username,
+      id: existingUser._id,
+    },
     token,
   });
 });
@@ -88,6 +94,7 @@ registerroute.get("/get-me", authMiddleware, async (req, res) => {
       username: user.username,
       bio: user.bio,
       profilePicture: user.profilePic,
+      id: user._id,
     },
   });
 });
