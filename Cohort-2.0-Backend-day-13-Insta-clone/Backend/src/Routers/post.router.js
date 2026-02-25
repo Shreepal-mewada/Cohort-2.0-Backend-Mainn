@@ -54,14 +54,13 @@ postRouter.get("/post/:id", authMiddleware, async (req, res) => {
 postRouter.get("/allposts", authMiddleware, async (req, res) => {
   const user = req.userrr.id;
   const posts = await Promise.all(
-    (await postModel.find().populate("userId").lean()).map(async (post) => {
+    (await postModel.find({}).populate("userId").lean()).map(async (post) => {
       const isliked = await likeModel.findOne({
         userId: user,
         postId: post._id,
       });
 
       post.isliked = Boolean(isliked);
-      console.log(post.isliked);
 
       return post;
     }),
@@ -76,12 +75,10 @@ postRouter.get("/allposts", authMiddleware, async (req, res) => {
 postRouter.post("/like/:id", authMiddleware, async (req, res) => {
   const userIdd = req.userrr.id;
   const paramsId = req.params.id;
-  
+
   if (!paramsId.match(/^[0-9a-fA-F]{24}$/)) {
     return res.status(400).json({ message: "Invalid post ID" });
   }
-  
-
 
   const post = await postModel.findById(paramsId);
   if (!post) {

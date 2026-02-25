@@ -5,8 +5,7 @@ const Post = ({ post }) => {
   const { caption, image } = post;
   const { username, profilePic } = post.userId;
   const { isliked } = post;
-  // const { user } = useAuth();
-  console.log(isliked);
+  
 
   return (
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 mb-6">
