@@ -1,14 +1,12 @@
 import "remixicon/fonts/remixicon.css";
-import { useAuth } from "../../auth/hooks/auth.hook";
+// import { useAuth } from "../../auth/hooks/auth.hook";
 
 const Post = ({ post }) => {
   const { caption, image } = post;
-  const { username, profilePic, _id } = post.userId;
-  const { likedBy } = post;
-  const { user } = useAuth();
-  // console.log(_id, post._id);
-  // console.log(post.userId._id === _id);
-  console.log(post);
+  const { username, profilePic } = post.userId;
+  const { isliked } = post;
+  // const { user } = useAuth();
+  console.log(isliked);
 
   return (
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 mb-6">
@@ -28,7 +26,7 @@ const Post = ({ post }) => {
       {/* Action Icons */}
       <div className="flex items-center gap-6 px-4 py-3 text-xl">
         <i
-          className={`ri-heart-line cursor-pointer hover:text-red-500 transition ${likedBy?.includes(user?.id || user?._id) ? "text-red-500" : ""}`}
+          className={`ri-heart-line cursor-pointer hover:text-red-500 transition ${isliked ? "text-red-500" : ""}`}
         ></i>
         <i className="ri-chat-3-line cursor-pointer hover:text-blue-500 transition"></i>
         <i className="ri-share-forward-line cursor-pointer hover:text-green-500 transition"></i>

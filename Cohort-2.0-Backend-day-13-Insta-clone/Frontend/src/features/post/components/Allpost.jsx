@@ -11,7 +11,7 @@ function Allpost() {
   return (
     <div className="flex flex-wrap gap-10 items-center justify-center">
       {!feed ? (
-        <p className="text-center text-gray-500">No posts available</p>
+        <p className="text-center text-gray-500">No posts available please login to see posts</p>
       ) : (
         feed.map((post) => <Post key={post._id} post={post} />)
       )}

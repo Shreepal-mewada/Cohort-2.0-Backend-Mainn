@@ -6,6 +6,7 @@ const postRouter = express.Router();
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 const authMiddleware = require("../middleware/auth.middleware");
+const likeModel = require("../model/like.model");
 const client = new ImageKit({
   privateKey: process.env["IMAGEKIT_PRIVATE_KEY"],
 });
@@ -51,30 +52,52 @@ postRouter.get("/post/:id", authMiddleware, async (req, res) => {
 });
 
 postRouter.get("/allposts", authMiddleware, async (req, res) => {
-  const posts = await postModel.find().populate("userId");
+  const user = req.userrr.id;
+  const posts = await Promise.all(
+    (await postModel.find().populate("userId").lean()).map(async (post) => {
+      const isliked = await likeModel.findOne({
+        userId: user,
+        postId: post._id,
+      });
+
+      post.isliked = Boolean(isliked);
+      console.log(post.isliked);
+
+      return post;
+    }),
+  );
+
   if (!posts) {
     return res.status(404).json({ message: "No posts found" });
   }
   res.status(200).json({ message: "All posts retrieved successfully", posts });
 });
 
-
-postRouter.patch("/like/:id", authMiddleware, async (req, res) => {
+postRouter.post("/like/:id", authMiddleware, async (req, res) => {
   const userIdd = req.userrr.id;
   const paramsId = req.params.id;
+  
+  if (!paramsId.match(/^[0-9a-fA-F]{24}$/)) {
+    return res.status(400).json({ message: "Invalid post ID" });
+  }
+  
+
+
   const post = await postModel.findById(paramsId);
   if (!post) {
     return res.status(404).json({ message: "Post not found" });
   }
-  const alreadyLiked = post.likedBy.includes(userIdd);
-  if (alreadyLiked) {
-    post.likedBy.pull(userIdd);
-    await post.save();
+  const isliked = await likeModel.findOne({
+    postId: paramsId,
+    userId: userIdd,
+  });
+  if (isliked) {
+    await likeModel.findByIdAndDelete(isliked._id);
     return res.status(200).json({ message: "Post unliked successfully" });
   }
-  post.likedBy.push(userIdd);
-  await post.save();
-  res.status(200).json({ message: "Post liked successfully" });
-}
-);
+
+  const liked = await likeModel.create({ postId: paramsId, userId: userIdd });
+  res.status(201).json({ message: "Post liked successfully", liked });
+});
+
 module.exports = postRouter;
